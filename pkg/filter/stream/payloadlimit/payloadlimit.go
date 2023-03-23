@@ -23,9 +23,10 @@ import (
 	"encoding/json"
 
 	"mosn.io/api"
+	"mosn.io/pkg/buffer"
+
 	"mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
-	"mosn.io/pkg/buffer"
 )
 
 type payloadLimitConfig struct {
@@ -42,9 +43,7 @@ type streamPayloadLimitFilter struct {
 }
 
 func NewFilter(ctx context.Context, cfg *v2.StreamPayloadLimit) api.StreamReceiverFilter {
-	if log.Proxy.GetLogLevel() >= log.DEBUG {
-		log.DefaultLogger.Debugf("create a new payload limit filter")
-	}
+	log.DefaultLogger.Debugf("create a new payload limit filter")
 	return &streamPayloadLimitFilter{
 		ctx:    ctx,
 		config: makePayloadLimitConfig(cfg),
@@ -81,9 +80,7 @@ func (f *streamPayloadLimitFilter) ReadPerRouteConfig(cfg map[string]interface{}
 	}
 	if payloadLimit, ok := cfg[v2.PayloadLimit]; ok {
 		if config, ok := parseStreamPayloadLimitConfig(payloadLimit); ok {
-			if log.DefaultLogger.GetLogLevel() >= log.INFO {
-				log.DefaultLogger.Infof("use router config to replace stream filter config, config: %v", payloadLimit)
-			}
+			log.DefaultLogger.Infof("use router config to replace stream filter config, config: %v", payloadLimit)
 			f.config = config
 		}
 	}
@@ -94,9 +91,9 @@ func (f *streamPayloadLimitFilter) SetReceiveFilterHandler(handler api.StreamRec
 }
 
 func (f *streamPayloadLimitFilter) OnReceive(ctx context.Context, headers api.HeaderMap, buf buffer.IoBuffer, trailers api.HeaderMap) api.StreamFilterStatus {
-	if log.Proxy.GetLogLevel() >= log.DEBUG {
-		log.DefaultLogger.Debugf("payload limit stream do receive headers")
-	}
+
+	log.DefaultLogger.Debugf("payload limit stream do receive headers")
+
 	if route := f.handler.Route(); route != nil {
 		// TODO: makes ReadPerRouteConfig as the StreamReceiverFilter's function
 		f.ReadPerRouteConfig(route.RouteRule().PerFilterConfig())
@@ -106,10 +103,10 @@ func (f *streamPayloadLimitFilter) OnReceive(ctx context.Context, headers api.He
 	// buf is nil means request method is GET?
 	if buf != nil && f.config.maxEntitySize != 0 {
 		if buf.Len() > int(f.config.maxEntitySize) {
-			if log.Proxy.GetLogLevel() >= log.DEBUG {
-				log.DefaultLogger.Debugf("payload size too large,data size = %d ,limit = %d",
-					buf.Len(), f.config.maxEntitySize)
-			}
+
+			log.DefaultLogger.Debugf("payload size too large,data size = %d ,limit = %d",
+				buf.Len(), f.config.maxEntitySize)
+
 			f.handler.RequestInfo().SetResponseFlag(api.ReqEntityTooLarge)
 			f.handler.SendHijackReply(int(f.config.status), f.headers)
 			return api.StreamFilterStop

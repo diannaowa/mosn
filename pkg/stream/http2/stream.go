@@ -31,6 +31,9 @@ import (
 	"time"
 
 	"mosn.io/api"
+	"mosn.io/pkg/buffer"
+	"mosn.io/pkg/variable"
+
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/module/http2"
 	"mosn.io/mosn/pkg/mtls"
@@ -39,8 +42,6 @@ import (
 	str "mosn.io/mosn/pkg/stream"
 	"mosn.io/mosn/pkg/trace"
 	"mosn.io/mosn/pkg/types"
-	"mosn.io/pkg/buffer"
-	"mosn.io/pkg/variable"
 )
 
 // TODO: move it to main
@@ -781,9 +782,7 @@ func (conn *clientStreamConnection) handleFrame(ctx context.Context, i interface
 	if lastStream != 0 {
 		conn.lastStream = lastStream
 		conn.streamConnectionEventListener.OnGoAway()
-		if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-			log.DefaultLogger.Debugf("http2 client receive goaway lastStreamID = %d", conn.lastStream)
-		}
+		log.DefaultLogger.Debugf("http2 client receive goaway lastStreamID = %d", conn.lastStream)
 		return
 	}
 
@@ -1087,9 +1086,7 @@ func (s *clientStream) GetStream() types.Stream {
 func (s *clientStream) ResetStream(reason types.StreamResetReason) {
 	// reset by goaway, support retry.
 	if s.sc.lastStream > 0 && s.id > s.sc.lastStream {
-		if log.DefaultLogger.GetLogLevel() >= log.WARN {
-			log.DefaultLogger.Warnf("http2 client reset by goaway, retry it, lastStream = %d, streamId = %d", s.sc.lastStream, s.id)
-		}
+		log.DefaultLogger.Warnf("http2 client reset by goaway, retry it, lastStream = %d, streamId = %d", s.sc.lastStream, s.id)
 		reason = types.StreamConnectionFailed
 	}
 

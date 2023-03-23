@@ -25,6 +25,9 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	"mosn.io/api"
+	"mosn.io/pkg/buffer"
+	"mosn.io/pkg/variable"
+
 	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/configmanager"
 	"mosn.io/mosn/pkg/log"
@@ -36,8 +39,6 @@ import (
 	mosnsync "mosn.io/mosn/pkg/sync"
 	"mosn.io/mosn/pkg/types"
 	"mosn.io/mosn/pkg/upstream/cluster"
-	"mosn.io/pkg/buffer"
-	"mosn.io/pkg/variable"
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
@@ -189,9 +190,7 @@ func (p *proxy) OnData(buf buffer.IoBuffer) api.FilterStatus {
 			return api.Stop
 		}
 
-		if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-			log.DefaultLogger.Debugf("[proxy] Protoctol Auto: %v", proto)
-		}
+		log.DefaultLogger.Debugf("[proxy] Protocol Auto: %v", proto)
 
 		p.serverStreamConn = stream.CreateServerStreamConnection(p.context, proto, p.readCallbacks.Connection(), p)
 	}
@@ -227,9 +226,7 @@ func (p *proxy) onDownstreamEvent(event api.ConnectionEvent) {
 	}
 	if event == api.OnReadTimeout {
 		if p.shouldFallback() {
-			if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-				log.DefaultLogger.Debugf("[proxy] wait for fallback timeout, do fallback")
-			}
+			log.DefaultLogger.Debugf("[proxy] wait for fallback timeout, do fallback")
 
 			p.fallback = true
 			p.readCallbacks.ContinueReading()

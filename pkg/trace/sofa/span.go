@@ -25,9 +25,10 @@ import (
 	"time"
 
 	"mosn.io/api"
+	"mosn.io/pkg/log"
+
 	"mosn.io/mosn/pkg/track"
 	"mosn.io/mosn/pkg/types"
-	"mosn.io/pkg/log"
 )
 
 type SofaRPCSpan struct {
@@ -93,9 +94,7 @@ func (s *SofaRPCSpan) FinishSpan() {
 	s.endTime = time.Now()
 	err := s.log()
 	if err == types.ErrChanFull {
-		if log.DefaultLogger.GetLogLevel() >= log.WARN {
-			log.DefaultLogger.Warnf("Channel is full, discard span, trace id is " + s.traceId + ", span id is " + s.spanId)
-		}
+		log.DefaultLogger.Warnf("Channel is full, discard span, trace id is " + s.traceId + ", span id is " + s.spanId)
 	}
 }
 

@@ -29,13 +29,14 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"mosn.io/api"
+	"mosn.io/pkg/header"
+	"mosn.io/pkg/variable"
+
 	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/stagemanager"
 	"mosn.io/mosn/pkg/streamfilter"
 	"mosn.io/mosn/pkg/types"
-	"mosn.io/pkg/header"
-	"mosn.io/pkg/variable"
 )
 
 func init() {
@@ -56,9 +57,7 @@ var _ api.NetworkFilterChainFactory = (*grpcServerFilterFactory)(nil)
 var _ api.FactoryInitializer = (*grpcServerFilterFactory)(nil)
 
 func (f *grpcServerFilterFactory) CreateFilterChain(ctx context.Context, callbacks api.NetWorkFilterChainFactoryCallbacks) {
-	if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-		log.DefaultLogger.Debugf("create a new grpc filter")
-	}
+	log.DefaultLogger.Debugf("create a new grpc filter")
 	rf := NewGrpcFilter(ctx, f.server.ln)
 	callbacks.AddReadFilter(rf)
 }

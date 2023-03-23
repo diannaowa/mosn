@@ -22,10 +22,11 @@ import (
 	"errors"
 
 	"mosn.io/api"
+	"mosn.io/pkg/variable"
+
 	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/types"
-	"mosn.io/pkg/variable"
 )
 
 // OriginDST filter used to find out destination address of a connection which been redirected by iptables or user header.
@@ -101,9 +102,7 @@ func (filter *originalDst) OnAccept(cb api.ListenerFilterChainFactoryCallbacks) 
 		return api.Continue
 	}
 
-	if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-		log.DefaultLogger.Debugf("%s remote addr: %s:%d", logTag, ip, port)
-	}
+	log.DefaultLogger.Debugf("%s remote addr: %s:%d", logTag, ip, port)
 
 	if filter.FallbackToLocal {
 		ctx := cb.GetOriContext()

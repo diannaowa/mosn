@@ -28,11 +28,12 @@ import (
 	"time"
 
 	"mosn.io/api"
+	"mosn.io/pkg/variable"
+
 	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/types"
 	"mosn.io/mosn/pkg/upstream/cluster"
-	"mosn.io/pkg/variable"
 )
 
 var (
@@ -288,9 +289,8 @@ func (rri *RouteRuleImplBase) finalizePathHeader(ctx context.Context, headers ap
 				// origin path need to save in the header
 				headers.Set(types.HeaderOriginalPath, path)
 				variable.SetString(ctx, types.VarPath, rri.prefixRewrite+path[len(matchedPath):])
-				if log.DefaultLogger.GetLogLevel() >= log.INFO {
-					log.DefaultLogger.Infof(RouterLogFormat, "routerule", "finalizePathHeader", "add prefix to path, prefix is "+rri.prefixRewrite)
-				}
+				log.DefaultLogger.Infof(RouterLogFormat, "routerule", "finalizePathHeader", "add prefix to path, prefix is "+rri.prefixRewrite)
+
 			}
 			return
 		}
@@ -301,9 +301,7 @@ func (rri *RouteRuleImplBase) finalizePathHeader(ctx context.Context, headers ap
 			if rewritedPath != path {
 				headers.Set(types.HeaderOriginalPath, path)
 				variable.SetString(ctx, types.VarPath, rewritedPath)
-				if log.DefaultLogger.GetLogLevel() >= log.INFO {
-					log.DefaultLogger.Infof(RouterLogFormat, "routerule", "finalizePathHeader", "regex rewrite path, rewrited path is "+rewritedPath)
-				}
+				log.DefaultLogger.Infof(RouterLogFormat, "routerule", "finalizePathHeader", "regex rewrite path, rewrited path is "+rewritedPath)
 			}
 		}
 

@@ -27,8 +27,9 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"mosn.io/mosn/pkg/log"
-	"mosn.io/mosn/pkg/networkextention/discovery"
 	"mosn.io/pkg/utils"
+
+	"mosn.io/mosn/pkg/networkextention/discovery"
 )
 
 func init() {
@@ -95,9 +96,7 @@ func getAppsInfoFromFileSystemFile(path string) {
 		select {
 		case ev := <-watch.Events:
 			updateHandler(path)
-			if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-				log.DefaultLogger.Debugf("[FileSystemDiscovery][getAppsInfoFromFileSystemFile]ev.Op: %d", ev.Op)
-			}
+			log.DefaultLogger.Debugf("[FileSystemDiscovery][getAppsInfoFromFileSystemFile]ev.Op: %d", ev.Op)
 		case err := <-watch.Errors:
 			{
 				log.DefaultLogger.Errorf("[FileSystemDiscovery][getAppsInfoFromFileSystemFile] failed: %v", err)
@@ -243,10 +242,8 @@ func (l *FileSystemDiscovery) GetServiceAddrInfo(appName string) []discovery.Ser
 		return serviceAddrInfo
 	}
 
-	if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-		log.DefaultLogger.Debugf("[FileSystemDiscovery][GetServiceAddrInfo] antvipClient.GetRealServers(domain:%s) = realServers:%+v",
-			appName, serviceAddrInfo)
-	}
+	log.DefaultLogger.Debugf("[FileSystemDiscovery][GetServiceAddrInfo] antvipClient.GetRealServers(domain:%s) = realServers:%+v",
+		appName, serviceAddrInfo)
 
 	l.rw.RLock()
 	defer l.rw.RUnlock()

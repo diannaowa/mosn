@@ -24,12 +24,13 @@ import (
 	"time"
 
 	"mosn.io/api"
+	"mosn.io/pkg/utils"
+	"mosn.io/pkg/variable"
+
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/protocol"
 	str "mosn.io/mosn/pkg/stream"
 	"mosn.io/mosn/pkg/types"
-	"mosn.io/pkg/utils"
-	"mosn.io/pkg/variable"
 )
 
 //const defaultIdleTimeout = time.Second * 60 // not used yet
@@ -273,9 +274,7 @@ func (p *connPool) report() {
 	utils.GoWithRecover(func() {
 		for {
 			p.clientMux.Lock()
-			if log.DefaultLogger.GetLogLevel() >= log.INFO {
-				log.DefaultLogger.Infof("[stream] [http] [connpool] pool = %s, available clients=%d, total clients=%d\n", p.Host().AddressString(), len(p.availableClients), atomic.LoadUint64(&p.totalClientCount))
-			}
+			log.DefaultLogger.Infof("[stream] [http] [connpool] pool = %s, available clients=%d, total clients=%d\n", p.Host().AddressString(), len(p.availableClients), atomic.LoadUint64(&p.totalClientCount))
 			p.clientMux.Unlock()
 			time.Sleep(time.Second)
 		}
@@ -340,10 +339,9 @@ func (ac *activeClient) OnDestroyStream() {
 func (ac *activeClient) OnResetStream(reason types.StreamResetReason) {
 	ac.pool.onStreamReset(ac, reason)
 	if reason == types.StreamLocalReset && !ac.closed {
-		if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-			log.DefaultLogger.Debugf("[stream] [http] stream local reset, blow client away also, Connection = %d",
-				ac.client.ConnID())
-		}
+		log.DefaultLogger.Debugf("[stream] [http] stream local reset, blow client away also, Connection = %d",
+			ac.client.ConnID())
+
 		ac.closeConn = true
 	}
 }

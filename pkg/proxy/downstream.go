@@ -32,6 +32,11 @@ import (
 
 	uatomic "go.uber.org/atomic"
 	"mosn.io/api"
+	"mosn.io/pkg/buffer"
+	"mosn.io/pkg/protocol/http"
+	"mosn.io/pkg/utils"
+	"mosn.io/pkg/variable"
+
 	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/protocol"
@@ -39,10 +44,6 @@ import (
 	"mosn.io/mosn/pkg/trace"
 	"mosn.io/mosn/pkg/track"
 	"mosn.io/mosn/pkg/types"
-	"mosn.io/pkg/buffer"
-	"mosn.io/pkg/protocol/http"
-	"mosn.io/pkg/utils"
-	"mosn.io/pkg/variable"
 )
 
 // types.StreamEventListener
@@ -348,9 +349,8 @@ func (s *downStream) OnResetStream(reason types.StreamResetReason) {
 	if !atomic.CompareAndSwapUint32(&s.downstreamReset, 0, 1) {
 		return
 	}
-	if log.DefaultLogger.GetLogLevel() >= log.WARN {
-		log.DefaultLogger.Warnf("[downStream] reset stream reason %v", reason)
-	}
+	log.DefaultLogger.Warnf("[downStream] reset stream reason %v", reason)
+
 	s.resetReason.Store(reason)
 
 	s.sendNotify()

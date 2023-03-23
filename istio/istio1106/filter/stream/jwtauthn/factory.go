@@ -8,6 +8,7 @@ import (
 	jwtauthnv3 "github.com/envoyproxy/go-control-plane/envoy/extensions/filters/http/jwt_authn/v3"
 	"github.com/golang/protobuf/jsonpb"
 	"mosn.io/api"
+
 	"mosn.io/mosn/istio/istio1106/config/v2"
 	"mosn.io/mosn/pkg/log"
 )
@@ -24,9 +25,7 @@ type FilterConfigFactory struct {
 
 // CreateJwtAuthnFilterFactory creates a new JwtAuthnFilterFactory.
 func CreateJwtAuthnFilterFactory(cfg map[string]interface{}) (api.StreamFilterChainFactory, error) {
-	if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-		log.DefaultLogger.Debugf("create jwt authn stream filter factory")
-	}
+	log.DefaultLogger.Debugf("create jwt authn stream filter factory")
 	c, err := ParseJWTAuthnFilter(cfg)
 	if err != nil {
 		return nil, err

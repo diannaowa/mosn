@@ -22,6 +22,7 @@ import (
 
 	"mosn.io/api"
 	"mosn.io/api/extensions/transcoder"
+
 	v2 "mosn.io/mosn/pkg/config/v2"
 	"mosn.io/mosn/pkg/log"
 )
@@ -67,9 +68,7 @@ func MustRegister(typ string, transcoder TranscoderFactory) {
 }
 
 func GetTranscoderFactory(typ string) TranscoderFactory {
-	if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-		log.DefaultLogger.Debugf("[stream filter][transcoder] GetTranscoder, typ %s, transcoderFactory %+v", typ, transcoderFactory)
-	}
+	log.DefaultLogger.Debugf("[stream filter][transcoder] GetTranscoder, typ %s, transcoderFactory %+v", typ, transcoderFactory)
 
 	if tf, ok := transcoderFactory[typ]; ok {
 		return tf

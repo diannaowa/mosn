@@ -25,10 +25,11 @@ import (
 
 	atomicex "go.uber.org/atomic"
 	"mosn.io/api"
+	"mosn.io/pkg/variable"
+
 	"mosn.io/mosn/pkg/log"
 	"mosn.io/mosn/pkg/stream"
 	"mosn.io/mosn/pkg/types"
-	"mosn.io/pkg/variable"
 )
 
 // poolPingPong is used for ping pong protocol such as http
@@ -369,10 +370,9 @@ func (ac *activeClientPingPong) OnResetStream(reason types.StreamResetReason) {
 
 	if reason == types.StreamLocalReset && !ac.closed {
 		// for xprotocol ping pong
-		if log.DefaultLogger.GetLogLevel() >= log.DEBUG {
-			log.DefaultLogger.Debugf("[stream] [pingpong] stream local reset, blow codecClient away also, Connection = %d",
-				ac.host.Connection.ID())
-		}
+		log.DefaultLogger.Debugf("[stream] [pingpong] stream local reset, blow codecClient away also, Connection = %d",
+			ac.host.Connection.ID())
+
 		ac.shouldCloseConn = true
 	}
 }
